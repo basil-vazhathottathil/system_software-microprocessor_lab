@@ -2,75 +2,63 @@
 #include <stdlib.h>
 
 void main() {
-	int head, lim, seektime = 0, disk_size, direction, temp;
-	printf("Enter the total number of requests: ");
-	scanf("%d", &lim);
-    
-	int request[lim + 1];
-    
-	printf("Enter the head position: ");
-	scanf("%d", &head);
-	request[0] = head;
-    
-	printf("Enter the requests:\n");
-	for (int i = 1; i <= lim; i++) {
-		scanf("%d", &request[i]);
-		}
-    
-	printf("Enter the disk size: ");
-	scanf("%d", &disk_size);
-    
-	printf("Enter the direction (1--right, 0--left): ");
-	scanf("%d", &direction);
-    
-	for (int i = 0; i < lim; i++) {
-		for (int j = i + 1; j < lim + 1; j++) {
-			if (request[i] > request[j]) {
-				temp = request[i];
-				request[i] = request[j];
-				request[j] = temp;
-				}
-			}
-		}
- 
-	int head_pos;
-	for (head_pos = 0; head_pos <= lim; head_pos++) {
-		if (request[head_pos] == head) {
-			break;
-			}
-		}
-    
-    
-	if (direction == 1) {
-		for (int i = head_pos; i <= lim; i++) {
-			if (i == head_pos) {
-				seektime += abs(request[i] - head);
-				}
-			else {
-				seektime += abs(request[i] - request[i - 1]);
-				}
-			}
-       
-		if (head_pos> 0) {
-			seektime += abs(disk_size - request[lim - 1]);
-			seektime += abs(disk_size - request[0]);
-			}
-		}
-	else { 
-		for (int i = pos; i >= 0; i--) {
-			if (i == pos) {
-				seektime += abs(request[i] - head);
-				}
-			else {
-				seektime += abs(request[i] - request[i + 1]);
-				}
-			}
-        
-			if (head_pos < lim) {
-				seektime += abs(request[0]);
-				seektime += abs(request[lim] - request[0]);
-				}
-			}
-    
-	printf("Total seek time: %d\n", seektime);
-	}
+        int n, head, size, direction, total_tracks = 0;
+        printf("Enter the number of requests: ");
+        scanf("%d", &n);
+        int requests[n];
+        printf("Enter the request sequence: ");
+        for(int i = 0; i < n; i++) {
+                scanf("%d", &requests[i]);
+        }
+        printf("head position: ");
+        scanf("%d", &head);
+        printf("disk size: ");
+        scanf("%d", &size);
+        printf("Enter the direction (1 for high, 0 for low): ");
+        scanf("%d", &direction);
+
+        for(int i = 0; i < n-1; i++) {
+                for(int j = i+1; j < n; j++) {
+                        if(requests[i] > requests[j]) {
+                                int temp = requests[i];
+                                requests[i] = requests[j];
+                                requests[j] = temp;
+                        }
+                }
+        }
+
+        int index = 0;
+        for(int i = 0; i < n; i++) {
+                if(head < requests[i]) {
+                        index = i;
+                        break;
+                }
+        }
+
+        if(direction == 1) {
+                for(int i = index; i < n; i++) {
+                        total_tracks += abs(requests[i] - head);
+                        head = requests[i];
+                }
+                total_tracks += abs((size - 1) - head);
+                head = size - 1;
+                for(int i = index - 1; i >= 0; i--) {
+                        total_tracks += abs(requests[i] - head);
+                        head = requests[i];
+                }
+        } else {
+                for(int i = index - 1; i >= 0; i--) {
+                        total_tracks += abs(requests[i] - head);
+                        head = requests[i];
+                }
+                total_tracks += abs(head - 0);
+                head = 0;
+                for(int i = index; i < n; i++) {
+                        total_tracks += abs(requests[i] - head);
+                        head = requests[i];
+                }
+        }
+
+        printf("Total number of tracks moved: %d\n", total_tracks);
+
+}
